@@ -43,11 +43,39 @@ contract MintGem is ERC721Enumerable, Ownable {
 
     // totalSupply: 발행한 총 NFT 양 -> 이것을 바탕으로 1씩 더해 tokenId를 생성할 수 있다.
     uint tokenId = totalSupply() + 1;
+    uint randomNonce = tokenId;
+
+    uint gemRank;
+    uint gemType;
+
+    // random한 값을 뽑아내기 위해 사용 (0~9)
+    uint randomRank = uint(keccak256(abi.encodePacked(blockhash(block.timestamp), msg.sender, randomNonce))) % 10;
+    randomNonce ++;
+    uint randomType = uint(keccak256(abi.encodePacked(blockhash(block.timestamp), msg.sender, randomNonce))) % 10;
+
+    if (randomRank < 4) {
+      gemRank = 1;
+    } else if(4<= randomRank && randomRank < 7) {
+      gemRank = 2;
+    } else if(7<= randomRank && randomRank < 9) {
+      gemRank = 3;
+    } else {
+      gemRank = 4;
+    }
+    if (randomType < 4) {
+      gemType = 1;
+    } else if(4<= randomType && randomType < 7) {
+      gemType = 2;
+    } else if(7<= randomType && randomType < 9) {
+      gemType = 3;
+    } else {
+      gemType = 4;
+    }
 
     // owner(): 이 contract를 소유한 계정
     payable(owner()).transfer(msg.value);
 
-    gemData[tokenId] = GemData(3, 3);
+    gemData[tokenId] = GemData(gemRank, gemType);
 
     /* 
       mint ... 인자 2개 필요: 
